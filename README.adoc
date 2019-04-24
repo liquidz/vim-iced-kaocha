@@ -1,0 +1,41 @@
+= vim-iced-kaocha
+
+https://github.com/liquidz/vim-iced[vim-iced] plugin for testing with https://github.com/lambdaisland/kaocha[kaocha].
+
+This plugin is powered by https://github.com/liquidz/kaocha-nrepl[liquidz/kaocha-nrepl].
+
+WARNING: This project is under development.
+
+== Requirements
+
+* https://github.com/liquidz/vim-iced[vim-iced] (`0.10.4` or later)
+
+== Command
+
+* `:IcedKaochaTest`
+* `:IcedKaochaTestNs`
+* `:IcedKaochaTestAll`
+
+== Installation
+
+=== vim-plug
+
+[source,vim]
+----
+Plug 'liquidz/vim-iced', {'for': 'clojure'}
+Plug 'liquidz/vim-iced-kaocha'
+----
+
+=== iced command
+
+To enable `kaocha-nrepl` middleware, please specify `--dependency` and `--middleware` option.
+
+-----
+$ iced repl --dependency=kaocha-nrepl:0.1.0-SNAPSHOT --middleware=kaocha-nrepl.core/wrap-kaocha
+-----
+
+== License
+
+Copyright (c) 2019 http://twitter.com/uochan[Masashi Iizuka].
+
+Distributed under the MIT License.
