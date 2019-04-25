@@ -15,6 +15,7 @@ WARNING: This project is under development.
 * `:IcedKaochaTest`
 * `:IcedKaochaTestNs`
 * `:IcedKaochaTestAll`
+* `:IcedKaochaRetest`
 
 == Installation
 

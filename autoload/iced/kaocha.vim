@@ -102,5 +102,11 @@ function! iced#kaocha#test_all() abort
   call iced#nrepl#op#cider#ns_load_all({_ -> iced#nrepl#op#kaocha#test_all(funcref('s:out'))})
 endfunction
 
+function! iced#kaocha#retest() abort
+  if !iced#nrepl#is_connected() | return iced#message#error('not_connected') | endif
+  "call iced#nrepl#op#cider#ns_load_all({_ -> iced#nrepl#op#kaocha#retest(funcref('s:out'))})
+  call iced#nrepl#op#kaocha#retest(funcref('s:out'))
+endfunction
+
 let &cpoptions = s:save_cpo
 unlet s:save_cpo
