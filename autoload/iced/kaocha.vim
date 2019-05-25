@@ -127,7 +127,7 @@ function! iced#kaocha#test_all() abort
   call iced#nrepl#op#cider#ns_load_all({_ -> iced#nrepl#op#kaocha#test_all(funcref('s:out'))})
 endfunction
 
-function! iced#kaocha#retest() abort
+function! iced#kaocha#test_redo() abort
   if !iced#nrepl#is_connected() | return iced#message#error('not_connected') | endif
   call iced#nrepl#op#kaocha#retest(funcref('s:out'))
 endfunction
