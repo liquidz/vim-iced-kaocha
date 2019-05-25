@@ -49,7 +49,7 @@ function! s:take_from_sexp(expr, n) abort
   return res
 endfunction
 
-function! s:extract_testable_id(ns, code) abort
+function! s:extract_testable_id(ns, code, callback) abort
   let code =  substitute(a:code, '[\r\n]\+', ' ', 'g')
   let code =  substitute(code, '\s\+', ' ', 'g')
   let head_two = s:take_from_sexp(code, 2)
@@ -63,38 +63,63 @@ function! s:extract_testable_id(ns, code) abort
 
   if fn ==# 'deftest'
     " clojure.test
-    return printf('%s/%s', a:ns, first_arg)
+    call iced#nrepl#ns#require(a:ns, {_ ->
+          \ a:callback(printf('%s/%s', a:ns, first_arg))})
   elseif fn ==# 'facts' || fn ==# 'fact'
     " midje
-    return iced#kaocha#midje#testable_id(a:ns, first_arg)
+    call iced#nrepl#ns#eval({_ ->
+          \ iced#kaocha#midje#testable_id(a:ns, first_arg, a:callback)})
   else
     " unknown
     return ''
   endif
 endfunction
 
-function! s:test_under_cursor(ns, code) abort
-  let testable_id = s:extract_testable_id(a:ns, a:code)
-  if empty(testable_id)
+function! s:is_empty_array(arr) abort
+  if empty(a:arr)
+    return v:true
+  endif
+
+  for x in a:arr
+    if empty(x)
+      return v:true
+    endif
+  endfor
+
+  return v:false
+endfunction
+
+function! iced#kaocha#test_by_ids(ids, ...) abort
+  if !iced#nrepl#is_connected() | return iced#message#error('not_connected') | endif
+
+  if s:is_empty_array(a:ids)
     return iced#message#error('not_found')
   endif
 
-  let option = {'ns': a:ns, 'testable-ids': [testable_id]}
+  let option = get(a:, 1, {})
+  let option['testable-ids'] = map(copy(a:ids), {_, id -> trim(id, ':')})
+
   call iced#nrepl#op#kaocha#test(option, funcref('s:out'))
 endfunction
 
+function! s:test_under_cursor(ns, code) abort
+  call s:extract_testable_id(a:ns, a:code, {id ->
+        \ iced#kaocha#test_by_ids([id], {'ns': a:ns})})
+endfunction
+
 function! iced#kaocha#test_under_cursor() abort
+  if !iced#nrepl#is_connected() | return iced#message#error('not_connected') | endif
+
   let ns = iced#nrepl#ns#name()
   let ctl = iced#paredit#get_current_top_list()
-  call iced#nrepl#ns#require(ns, {_ -> s:test_under_cursor(ns, ctl['code'])})
+  call s:test_under_cursor(ns, ctl['code'])
 endfunction
 
 function! iced#kaocha#test_ns(ns) abort
   if !iced#nrepl#is_connected() | return iced#message#error('not_connected') | endif
   let ns = empty(a:ns) ? iced#nrepl#ns#name() : a:ns
-  let option = {'testable-ids': [ns]}
 
-  call iced#nrepl#ns#require(ns, {_ -> iced#nrepl#op#kaocha#test(option, funcref('s:out'))})
+  call iced#nrepl#ns#require(ns, {_ -> iced#kaocha#test_by_ids([ns])})
 endfunction
 
 function! iced#kaocha#test_all() abort
@@ -104,7 +129,6 @@ endfunction
 
 function! iced#kaocha#retest() abort
   if !iced#nrepl#is_connected() | return iced#message#error('not_connected') | endif
-  "call iced#nrepl#op#cider#ns_load_all({_ -> iced#nrepl#op#kaocha#retest(funcref('s:out'))})
   call iced#nrepl#op#kaocha#retest(funcref('s:out'))
 endfunction
 
