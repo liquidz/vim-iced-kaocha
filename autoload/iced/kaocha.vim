@@ -1,6 +1,8 @@
 let s:save_cpo = &cpoptions
 set cpoptions&vim
 
+let s:last_test = {}
+
 function! s:out(resp) abort
   call iced#nrepl#test#done(
         \ iced#nrepl#test#clojure_test#parse(a:resp))
@@ -99,6 +101,8 @@ function! iced#kaocha#test_by_ids(ids, ...) abort
   let option = get(a:, 1, {})
   let option['testable-ids'] = map(copy(a:ids), {_, id -> trim(id, ':')})
 
+  let s:last_test = {'type': 'id', 'ids': option['testable-ids']}
+
   call iced#nrepl#op#kaocha#test(option, funcref('s:out'))
 endfunction
 
@@ -124,12 +128,29 @@ endfunction
 
 function! iced#kaocha#test_all() abort
   if !iced#nrepl#is_connected() | return iced#message#error('not_connected') | endif
+
+  let s:last_test = {'type': 'all'}
+
   call iced#nrepl#op#cider#ns_load_all({_ -> iced#nrepl#op#kaocha#test_all(funcref('s:out'))})
 endfunction
 
 function! iced#kaocha#test_redo() abort
   if !iced#nrepl#is_connected() | return iced#message#error('not_connected') | endif
   call iced#nrepl#op#kaocha#retest(funcref('s:out'))
+endfunction
+
+function! iced#kaocha#test_rerun_last() abort
+  if !iced#nrepl#is_connected() | return iced#message#error('not_connected') | endif
+  if empty(s:last_test) | return iced#message#error('not_found') | endif
+
+  let test_type = s:last_test['type']
+  if test_type ==# 'id'
+    call iced#kaocha#test_by_ids(s:last_test['ids'])
+  elseif test_type ==# 'all'
+    call iced#kaocha#test_all()
+  else
+    return iced#message#error_str('Invalid test type')
+  endif
 endfunction
 
 let &cpoptions = s:save_cpo
