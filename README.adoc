@@ -44,8 +44,10 @@ Plug 'liquidz/vim-iced-kaocha'
 
 To enable `kaocha-nrepl` middleware, please specify `--dependency` and `--middleware` option.
 
+image:https://img.shields.io/clojars/v/kaocha-nrepl.svg["Clojars Project", link="https://clojars.org/kaocha-nrepl"]
+
 -----
-$ iced repl --dependency=kaocha-nrepl:0.1.0 --middleware=kaocha-nrepl.core/wrap-kaocha
+$ iced repl --dependency=kaocha-nrepl:0.1.1 --middleware=kaocha-nrepl.core/wrap-kaocha
 -----
 
 == Usage
