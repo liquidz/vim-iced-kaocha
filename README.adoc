@@ -76,7 +76,7 @@ This behavior may fix next version.  link:https://github.com/lambdaisland/kaocha
 ----
 
 [source,clojure]
-.test.edn
+.tests.edn
 ----
 #kaocha/v1
 {:tests [{:id :unit
