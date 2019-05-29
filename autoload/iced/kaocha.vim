@@ -70,7 +70,10 @@ function! s:extract_testable_id(ns, code, callback) abort
   elseif fn ==# 'facts' || fn ==# 'fact'
     " midje
     call iced#nrepl#ns#eval({_ ->
-          \ iced#kaocha#midje#testable_id(a:ns, first_arg, a:callback)})
+          \ iced#nrepl#ns#require('midje.config', {_ ->
+          \   iced#nrepl#ns#require('midje.repl', {_ ->
+          \     iced#kaocha#midje#testable_id(a:ns, first_arg, a:callback)
+          \ })})})
   else
     " unknown
     return ''
