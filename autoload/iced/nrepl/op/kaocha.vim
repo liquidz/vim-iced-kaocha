@@ -9,7 +9,7 @@ function! iced#nrepl#op#kaocha#test_all(callback) abort
   call iced#nrepl#send({
         \ 'id': iced#nrepl#id(),
         \ 'op': 'kaocha-test-all',
-        \ 'sesion': iced#nrepl#current_session(),
+        \ 'session': iced#nrepl#current_session(),
         \ 'callback': a:callback,
         \ })
 endfunction
@@ -22,7 +22,7 @@ function! iced#nrepl#op#kaocha#test(option, callback) abort
   let msg = {
         \ 'id': iced#nrepl#id(),
         \ 'op': 'kaocha-test',
-        \ 'sesion': iced#nrepl#current_session(),
+        \ 'session': iced#nrepl#current_session(),
         \ 'callback': a:callback,
         \ }
   call extend(msg, a:option)
@@ -38,7 +38,7 @@ function! iced#nrepl#op#kaocha#retest(callback) abort
   call iced#nrepl#send({
         \ 'id': iced#nrepl#id(),
         \ 'op': 'kaocha-retest',
-        \ 'sesion': iced#nrepl#current_session(),
+        \ 'session': iced#nrepl#current_session(),
         \ 'callback': a:callback,
         \ })
 endfunction
