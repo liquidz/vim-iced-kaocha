@@ -51,6 +51,15 @@ function! s:take_from_sexp(expr, n) abort
   return res
 endfunction
 
+function! s:lang_prefix() abort
+  let ext = expand('%:e')
+  let sess_key = iced#nrepl#current_session_key()
+
+  " c.f. https://github.com/lambdaisland/kaocha-cljs/blob/v0.0-59/src/kaocha/type/cljs.clj#L38-L51
+  return (ext ==# 'cljs' || sess_key ==# 'cljs')
+        \ ? 'cljs:' : ''
+endfunction
+
 function! s:extract_testable_id(ns, code, callback) abort
   let code =  substitute(a:code, '[\r\n]\+', ' ', 'g')
   let code =  substitute(code, '\s\+', ' ', 'g')
@@ -65,8 +74,9 @@ function! s:extract_testable_id(ns, code, callback) abort
 
   if fn ==# 'deftest'
     " clojure.test
+    let prefix = s:lang_prefix()
     call iced#nrepl#ns#require(a:ns, {_ ->
-          \ a:callback(printf('%s/%s', a:ns, first_arg))})
+          \ a:callback(printf('%s%s/%s', prefix, a:ns, first_arg))})
   elseif fn ==# 'facts' || fn ==# 'fact'
     " midje
     call iced#nrepl#ns#eval({_ ->
