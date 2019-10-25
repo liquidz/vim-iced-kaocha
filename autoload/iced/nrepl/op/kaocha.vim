@@ -30,6 +30,19 @@ function! iced#nrepl#op#kaocha#test(option, callback) abort
   call iced#nrepl#send(msg)
 endfunction
 
+function! iced#nrepl#op#kaocha#testable_ids(callback) abort
+  if !iced#nrepl#is_connected()
+    return iced#message#error('not_connected')
+  endif
+
+  call iced#nrepl#send({
+        \ 'id': iced#nrepl#id(),
+        \ 'op': 'kaocha-testable-ids',
+        \ 'session': iced#nrepl#current_session(),
+        \ 'callback': a:callback,
+        \ })
+endfunction
+
 function! iced#nrepl#op#kaocha#retest(callback) abort
   if !iced#nrepl#is_connected()
     return iced#message#error('not_connected')
@@ -44,7 +57,7 @@ function! iced#nrepl#op#kaocha#retest(callback) abort
 endfunction
 
 " register op response handler
-for op in ['kaocha-test-all', 'kaocha-test', 'kaocha-retest']
+for op in ['kaocha-test-all', 'kaocha-test', 'kaocha-test-plan', 'kaocha-retest']
   call iced#nrepl#register_handler(op, function('iced#nrepl#extend_responses_handler'))
 endfor
 
