@@ -3,6 +3,12 @@ if exists('g:loaded_iced_kaocha')
 endif
 let g:loaded_iced_kaocha = 1
 
+if !exists('g:vim_iced_version')
+      \ || g:vim_iced_version < 20104
+  echoe 'iced-kaocha requires vim-iced v2.1.4 or later.'
+  finish
+endif
+
 let s:save_cpo = &cpoptions
 set cpoptions&vim
 

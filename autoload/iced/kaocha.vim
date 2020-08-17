@@ -128,7 +128,7 @@ function! iced#kaocha#test_under_cursor() abort
   if !iced#nrepl#is_connected() | return iced#message#error('not_connected') | endif
 
   let ns = iced#nrepl#ns#name()
-  let ctl = iced#paredit#get_current_top_list()
+  let ctl = iced#paredit#get_current_top_object('(', ')')
   call s:test_under_cursor(ns, ctl['code'])
 endfunction
 
